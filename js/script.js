@@ -10,7 +10,7 @@ let createWebringList = (matchedSiteIndices) => {
     const displayUrl = formatUrl(site.website);
 
     const listItem = document.createElement("div");
-    listItem.className = "grid grid-cols-12 sm:grid-cols-6 gap-3 sm:gap-6";
+    listItem.className = "grid grid-cols-12 sm:grid-cols-6 gap-2 sm:gap-4";
     const isSearchItem =
       matchedSiteIndices.includes(index) &&
       matchedSiteIndices.length !== window.webringData.sites.length;
@@ -23,14 +23,14 @@ let createWebringList = (matchedSiteIndices) => {
     }
 
     const name = document.createElement("span");
-    name.className = "col-span-5 sm:col-span-3 font-latinRomanCaps truncate";
+    name.className = "col-span-5 sm:col-span-2 font-monospace truncate";
     name.textContent = site.name;
     if (isSearchItem) {
       name.className += " text-mustard-100"
     }
 
     const year = document.createElement("span");
-    year.className = "col-span-2 sm:col-span-1 text-right font-latinRoman";
+    year.className = "col-span-2 sm:col-span-1 text-right font-monospace";
     year.textContent = site.year;
     if (isSearchItem) {
       year.className += " text-mustard-100"
@@ -39,7 +39,7 @@ let createWebringList = (matchedSiteIndices) => {
     const link = document.createElement("a");
     link.href = site.website;
     link.className =
-      "col-span-5 sm:col-span-2 font-latinMonoRegular underline truncate";
+      "col-span-4 sm:col-span-2 font-monospace underline truncate";
     link.textContent = displayUrl;
     if (isSearchItem) {
       link.className += " text-mustard-100"
@@ -47,8 +47,12 @@ let createWebringList = (matchedSiteIndices) => {
       link.className += " text-mustard-500"
     }
 
+    const spacer = document.createElement("span");
+    spacer.className = "col-span-1 sm:col-span-1";
+
     listItem.appendChild(name);
     listItem.appendChild(year);
+    listItem.appendChild(spacer);
     listItem.appendChild(link);
     webringList.appendChild(listItem);
   });
@@ -60,15 +64,6 @@ let createWebringList = (matchedSiteIndices) => {
     }, 100);
   }
 };
-function handleUrlFragment(searchInput) {
-  const fragment = window.location.hash.slice(1); // Remove the # symbol
-  if (fragment) {
-    searchInput.value = decodeURIComponent(fragment);
-    filterWebring(fragment);
-    const searchEvent = new Event("input");
-    searchInput.dispatchEvent(searchEvent);
-  }
-}
 function filterWebring(searchTerm) {
   const searchLower = searchTerm.toLowerCase();
   const matchedSiteIndices = [];
@@ -123,29 +118,22 @@ function init() {
   if (window.location.hash.includes("?nav=")) {
     navigateWebring();
   }
-  const desktopInput = document.getElementById("search");
-  const mobileInput = document.getElementById("search-mobile");
+  const searchInput = document.getElementById("search");
+
+  const program = window.location.hash.slice(1) || "cs";
+  const title = document.getElementById("webring-title");
+  if (title) {
+    title.textContent = `QUEENSU-WEBRING/${program.toUpperCase()}`;
+  }
 
   createWebringList(window.webringData.sites.map((_, i) => i));
 
-  if (desktopInput) {
-    handleUrlFragment(desktopInput);
-    desktopInput.addEventListener("input", (e) => {
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
       filterWebring(e.target.value);
     });
   }
 
-  if (mobileInput) {
-    handleUrlFragment(mobileInput);
-    mobileInput.addEventListener("input", (e) => {
-      filterWebring(e.target.value);
-    });
-  }
-
-  window.addEventListener("hashChange", () => {
-    if (desktopInput) handleUrlFragment(desktopInput);
-    if (mobileInput) handleUrlFragment(mobileInput);
-  });
   window.addEventListener("hashchange", navigateWebring);
 }
 

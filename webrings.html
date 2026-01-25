@@ -11,6 +11,9 @@
     [x-cloak] {
       display: none;
     }
+    .btn-hover:hover {
+      text-decoration: underline;
+    }
   </style>
 
   <!-- SEO Meta Tags -->
@@ -33,33 +36,22 @@
     content="A webring for Computer Science students and alumni at the University of Waterloo.">
   <meta property="twitter:image" content="https://cs.uwatering.com/webAssets/og.png">
 
-  <!-- Favicon (add your own favicon later) -->
-  <!-- <link rel="icon" type="image/x-icon" href="../webAssets/favicon.ico"> -->
-
   <!-- JS sources -->
   <script src="//unpkg.com/alpinejs" defer></script>
   <script src="https://d3js.org/d3.v7.min.js"></script>
 
   <!-- Get program from URL hash -->
   <script type="module">
-    console.log("Full URL:", window.location.href);
-    console.log("Hash:", window.location.hash);
-    
-    const program = window.location.hash.slice(1) || "cs";
-    console.log("Loading program:", program);
+    let program = window.location.hash.slice(1) || "cs";
 
     try {
       const response = await fetch(`./sites/${program}.json`);
-      console.log("Fetch response:", response.status, response.ok);
       if (!response.ok) throw new Error(`Failed to load ${program}.json`);
       const sites = await response.json();
-      console.log("Loaded sites:", sites);
 
       window.webringData = { sites: sites };
-      console.log("webringData set:", window.webringData);
 
       await import("./js/script.js");
-      console.log("script.js imported");
     } catch (error) {
       console.error("Error loading webring data:", error);
       document.getElementById("webring-list").innerHTML =
@@ -68,70 +60,43 @@
   </script>
 </head>
 
-<body class="bg-mustard-100">
-  <main class=" text-black-900 px-2 py-6 sm:p-6 sm:min-h-[100vh] sm:w-[100vw] overflow-x-hidden">
-    <header class="hidden sm:block">
-      <h1 class="text-2xl font-latinRomanCaps text-black-900">Math Webring</h1>
-    </header>
-    <div class="sm:hidden fixed top-6 left-0 w-full px-2">
-      <input type="text" id="search-mobile" placeholder="Search by name, year or url..."
-        class=" w-full font-latinMonoCaps px-4 py-2 border border-lime-700 rounded-none" />
+<body class="bg-black-900">
+  <main class="text-white px-4 py-6 sm:p-6 w-full flex flex-col items-center" style="height: 100vh; overflow: hidden;">
+    <h1 class="mb-4 w-full sm:w-3/5 lg:w-2/5 py-4 mx-auto text-2xl font-monospace italic font-bold text-white" style="flex-shrink: 0;" id="webring-title">QUEENSU-WEBRING</h1>
+
+    <hr class="w-full sm:w-3/5 lg:w-2/5 mx-auto border-white" style="margin-bottom: 1rem; flex-shrink: 0;">
+
+    <div class="mb-4 w-full sm:w-3/5 lg:w-2/5 mx-auto" style="flex-shrink: 0;">
+      <input type="text" id="search" placeholder="Search members by name, year or url..."
+        class="w-full font-monospace px-4 py-2 border border-white rounded-none" />
     </div>
-    <div class="w-full sm:w-3/5 lg:w-2/5">
-      <p class="hidden sm:block font-latinRoman mt-10 leading-tight">
-        Welcome to the official webring of students studying CS at the
-        <a class="text-mustard-500 underline" href="https://uwaterloo.ca/" target="_blank">University of Waterloo</a>
-        in Ontario, Canada. This is an ongoing project to document one of the most talented student bodies in the world,
-        all while making them more visible to the public.
-      </p>
-      <p class="hidden sm:block font-latinRoman mt-4 leading-tight">
-        If you're one of us, we welcome you with open arms
-        (or in this case, open
-        <a class="text-mustard-500 underline" href="https://github.com/JusGu/uwatering">open PRs</a>).
-      </p>
-      <div>
-        <div class="grid grid-cols-12 sm:grid-cols-6 gap-3 sm:gap-6 mb-6 mt-16">
-          <span
-            class="col-span-5 sm:col-span-3 text-left font-latinRomanDunhillOblique text-burgundy-500 text-lg italic">NAME</span>
-          <span
-            class="col-span-2 sm:col-span-1 text-right font-latinRomanDunhillOblique text-burgundy-500 text-lg italic">YEAR</span>
-          <span
-            class="col-span-5 sm:col-span-2 text-left font-latinRomanDunhillOblique text-burgundy-500 text-lg italic">URL</span>
-        </div>
-        <div class="w-full flex-flex-col space-y-1 text-sm sm:text-base mb-24 sm:mb-0" id="webring-list">
-        </div>
+
+    <div class="w-full sm:w-3/5 lg:w-2/5 mx-auto py-2" style="flex-shrink: 0;">
+      <div class="flex flex-row" style="gap: .5rem;">
+        <button onclick="window.open('https://github.com/AaronSu06/QU-Webring/issues/new', '_blank')" class="btn-hover w-full font-monospace px-4 py-2 border border-white rounded-none" style="cursor: pointer;">Report Broken Link</button>
+        <button onclick="window.open('https://github.com/AaronSu06/QU-Webring/pulls', '_blank')" class="btn-hover w-full font-monospace px-4 py-2 border border-white rounded-none" style="cursor: pointer;">Join the Webring</button>
+        <button onclick="window.location.href = window.webringData.sites[Math.floor(Math.random() * window.webringData.sites.length)].website" class="btn-hover w-full font-monospace px-4 py-2 border border-white rounded-none" style="cursor: pointer;">Random</button>
       </div>
     </div>
 
-    <footer x-data="{ open: true }"
-      class="fixed bottom-0 left-0 w-full sm:hidden bg-white border-t border-black-800 pt-4 pb-3 px-2">
-      <div @click="open = ! open" class="flex justify-between">
-        <button class="font-latinMonoRegular text-black-900 flex space-x-2 items-center">
-          <span x-text="open ? '[-]' : '[+]'"></span>
-          <span x-text="open ? 'CLOSE' : 'MORE INFO'"></span>
-        </button>
-        <div class="flex space-x-4 leading-none">
-          <a href="https://en.wikipedia.org/wiki/Webring"
-            class="font-latinMonoCondOblique text-lime-700 underline italic">what's a webring?</a>
-          <a href="https://github.com/JusGu/uwatering?tab=readme-ov-file#join-the-webring"
-            class="font-latinMonoCondOblique text-lime-700 underline italic">how can i join?</a>
+    <p class="mb-4 w-full sm:w-3/5 lg:w-2/5 mx-auto text-base font-monospace italic text-white" style="flex-shrink: 0;" id="webring-info">This webring consists of # members. It was last updated on January 24, 2026.</p>
+
+    <hr class="w-full sm:w-3/5 lg:w-2/5 mx-auto border-white" style="margin-top: 1rem; flex-shrink: 0;">
+
+    <div class="w-full sm:w-3/5 lg:w-2/5 mx-auto" style="flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
+      <div style="display: flex; flex-direction: column; height: 100%;">
+        <div class="grid grid-cols-12 sm:grid-cols-6 gap-2 sm:gap-4 mb-2 mt-4" style="flex-shrink: 0;">
+          <span class="col-span-5 sm:col-span-2 text-left font-monospace text-white text-2xl italic font-bold">NAME</span>
+          <span class="col-span-2 sm:col-span-1 text-right font-monospace text-white text-2xl italic font-bold">YEAR</span>
+          <span class="col-span-1 sm:col-span-1"></span>
+          <span class="col-span-4 sm:col-span-2 text-left font-monospace text-white text-2xl italic font-bold">URL</span>
+        </div>
+        <div class="w-full flex flex-col space-y-1 py-6 text-sm sm:text-base" style="flex: 1; overflow-y: auto;" id="webring-list">
         </div>
       </div>
+    </div>
 
-      <div x-show="open" class="w-full mt-8 mb-6">
-        <p class="w-full font-latinMonoRegular leading-none">
-          We are computer science students and alumni studying at the <a class="text-mustard-500 underline"
-            href="https://uwaterloo.ca/">University of
-            Waterloo</a> in Ontario, Canada. If you're one of us, we welcome you with open arms. (Or in this case, open
-          <a class="text-mustard-500 underline" href="https://github.com/JusGu/uwatering">open PRs</a>).
-        </p>
-        <div id="webring-chart-mobile" class="w-full border border-black-900 mt-4">
-          <div id="chart-container-mobile" class="h-[12rem]"></div>
-        </div>
-      </div>
-
-      <span class="mt-2 font-latinRomanCaps text-black-900">Math Webring</span>
-    </footer>
+    <hr class="w-full sm:w-3/5 lg:w-2/5 mx-auto border-white" style="margin-bottom: 1rem; flex-shrink: 0;">
   </main>
 </body>
 

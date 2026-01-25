@@ -44,7 +44,7 @@ if (container) {
 
   const loader = new GLTFLoader();
   loader.load(
-    "assets/QU_Model.gltf",
+    "assets/model/QU_Model.gltf",
     (gltf) => {
       const model = gltf.scene;
       if (!model) {
