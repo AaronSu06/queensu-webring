@@ -28,6 +28,7 @@ body.home-page {
     --space-3: 1.3rem;
     --space-4: 2rem;
     --space-5: 3rem;
+    --content-max-width: 100%;
 }
 
 .three-container {
@@ -115,19 +116,56 @@ h1 {
 }
 
 .webrings {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
     gap: var(--space-2);
     width: 100%;
-    max-width: 500px;
+    max-width: 520px;
     margin: 0 auto;
-    align-items: center;
     margin-bottom: var(--space-3);
+    justify-items: center;
+    position: relative;
+}
+
+.webrings::before,
+.webrings::after {
+    content: "";
+    position: absolute;
+    background: #e6e6e6;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.webrings::before {
+    width: 2px;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.webrings::after {
+    height: 2px;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 520px) {
+    .webrings {
+        grid-template-columns: 1fr;
+    }
+
+    .webrings::before,
+    .webrings::after {
+        content: none;
+    }
 }
 
 .section {
     width: 100%;
-    max-width: 640px;
+    max-width: var(--content-max-width, 640px);
     margin: 0 auto 0;
     text-align: center;
 }
@@ -170,7 +208,7 @@ h1 {
 
 .divider {
     width: 100%;
-    max-width: 640px;
+    max-width: var(--content-max-width, 640px);
     border: 0;
     border-top: 1px solid #ffffff;
     margin-top: 0;
@@ -221,11 +259,19 @@ h1 {
     .sm\:w-3\/5 {
         width: 60%;
     }
+
+    body.home-page {
+        --content-max-width: 60vw;
+    }
 }
 
 @media (min-width: 1024px) {
     .lg\:w-2\/5 {
         width: 40%;
+    }
+
+    body.home-page {
+        --content-max-width: 40vw;
     }
 }
 
@@ -272,17 +318,80 @@ h1 {
     color: #0c0c0c;
 }
 
-.webrings a {
-    display: block;
+.webring-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
     width: 100%;
-    padding: 0.5rem 1rem;
-    background: rgba(10, 10, 10, 0.75);
-    border: 2px solid #e6e6e6;
+    min-height: 180px;
+    padding: var(--space-3) var(--space-2);
+    background: transparent;
+    border: none;
     text-decoration: none;
     color: #e6e6e6;
-    font-size: 1.1rem;
-    transition: all 0.2s;
+    font-size: 1.05rem;
     text-align: center;
+    transition: transform 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
+    position: relative;
+    z-index: 1;
+}
+
+.webring-logo {
+    width: clamp(110px, 30vw, 160px);
+    height: clamp(110px, 30vw, 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: transparent;
+}
+
+.webring-logo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+.webring-logo canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+}
+
+.webring-logo--model {
+    overflow: hidden;
+}
+
+.webring-name {
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+}
+
+.webring-card:hover,
+.webring-card:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f5f5f5;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.webring-card:hover .webring-logo,
+.webring-card:focus-visible .webring-logo {
+    color: #f5f5f5;
+    background: transparent;
+}
+
+.webring-card:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 4px;
 }
 
 .about-link,
@@ -296,6 +405,8 @@ h1 {
     font-size: 0.95rem;
     text-align: center;
 }
+
+/* Layout guides: remove when done aligning elements. */
 
 .about-link {
     margin: var(--space-3) auto 0;
