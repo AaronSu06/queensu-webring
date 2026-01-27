@@ -50,6 +50,37 @@ body.home-page {
     z-index: 1;
 }
 
+.home-page .hero-actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    width: min(360px, 90vw);
+    margin: 0 auto;
+}
+
+.home-page .hero-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    background: transparent;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    flex: 1 1 140px;
+}
+
+.home-page .hero-button:hover,
+.home-page .hero-button:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
 .three-container canvas {
     display: block;
     width: 100%;
@@ -99,6 +130,12 @@ h1 {
     font-weight: normal;
     margin: 0;
     width: 100%;
+}
+
+#hero-title,
+#about-title,
+#join-title {
+    color: #ffffff;
 }
 
 body.home-page p {
@@ -327,7 +364,7 @@ body.home-page p {
     background: transparent;
     border: none;
     text-decoration: none;
-    color: #e6e6e6;
+    color: #ffffff;
     font-size: 1.05rem;
     text-align: center;
     transition: transform 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
@@ -370,12 +407,13 @@ body.home-page p {
 .webring-name {
     font-size: 1.05rem;
     letter-spacing: 0.02em;
+    color: #ffffff;
 }
 
 .webring-card:hover,
 .webring-card:focus-visible {
     background: rgba(255, 255, 255, 0.08);
-    color: #f5f5f5;
+    color: #ffffff;
     transform: translateY(-2px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
