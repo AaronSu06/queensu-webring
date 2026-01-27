@@ -42,7 +42,7 @@ if (containers.length) {
 
   const initScene = async (container) => {
     const modelType = container.dataset.qmodel || "hero";
-    const modelUrl = container.dataset.model || "assets/model/QU_Model.gltf";
+    const modelUrl = container.dataset.model || "assets/model/QU_Webring.gltf";
     const edgeAngleValue = Number.parseFloat(container.dataset.edgeAngle);
     const edgeAngle = Number.isFinite(edgeAngleValue)
       ? edgeAngleValue
