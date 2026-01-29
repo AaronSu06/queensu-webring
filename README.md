@@ -17,7 +17,7 @@ Webrings are collections of personal websites connected in a ring structure, mak
     "name": "Your Name",
     "year": 20XX,
     "website": "https://yoursite.com/"
-}
+},
 ```
 3. **Open a Pull Request** with your information. Include verification (like a LinkedIn profile or other social media) showing your connection to Queen's University.
 
