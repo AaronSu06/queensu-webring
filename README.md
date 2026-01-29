@@ -11,13 +11,13 @@ Webrings are collections of personal websites connected in a ring structure, mak
 
 ### Steps to join:
 1. **Add the webring widget to your site** (see templates below). We recommend placing it in your footer or navigation area.
-2. **Fork this repository** and add your entry to the END of the array in your program's `.json` file under the `sites` folder (e.g., Computing students should add their entry to `cs.json`):
+2. **Fork this repository** and add your entry to the END of the array in your program's `.json` file under the `sites` folder (e.g., Computing students would add their entry to `cs.json`):
 ```json
 {
     "name": "Your Name",
     "year": 20XX,
     "website": "https://yoursite.com/"
-}
+},
 ```
 3. **Open a Pull Request** with your information. Include verification (like a LinkedIn profile or other social media) showing your connection to Queen's University.
 
