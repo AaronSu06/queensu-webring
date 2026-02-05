@@ -9,9 +9,12 @@ if (containers.length) {
   const modelCache = new Map();
   const spinSpeed = 0.45;
   const spinReturnSpeed = 2.4;
+  const spinLerpSpeed = 8;
   const cameraReturnDelay = 0;
   const cameraReturnSpeed = 2.2;
   const cameraReturnEpsilon = 0.0005;
+  const scrollStopDelay = 140;
+  const TAU = Math.PI * 2;
   const defaultEdgeAngleByType = {
     hero: 25,
     logo: 10,
@@ -47,6 +50,47 @@ if (containers.length) {
   const scenes = [];
   let animationFrameId = null;
   const clock = new THREE.Clock();
+  let scrollProgress = 0;
+  let lastScrollTime = Number.NEGATIVE_INFINITY;
+  let wasScrollActive = false;
+  let scrollStartProgress = 0;
+  let scrollStartAngle = 0;
+  let autoSpinStartAngle = 0;
+  let autoSpinStartTime = 0;
+  let listenersAttached = false;
+
+  const resetAnimationState = () => {
+    scrollProgress = 0;
+    lastScrollTime = Number.NEGATIVE_INFINITY;
+    wasScrollActive = false;
+    scrollStartProgress = 0;
+    scrollStartAngle = 0;
+    autoSpinStartAngle = 0;
+    autoSpinStartTime = 0;
+    animate.lastElapsed = 0;
+    clock.stop();
+    clock.start();
+  };
+
+  const updateScrollProgress = () => {
+    const doc = document.documentElement;
+    const scrollTop = window.scrollY || doc.scrollTop || 0;
+    const scrollHeight = Math.max(
+      document.body.scrollHeight,
+      doc.scrollHeight,
+      document.body.offsetHeight,
+      doc.offsetHeight,
+      doc.clientHeight
+    );
+    const viewportHeight = window.innerHeight || doc.clientHeight || 0;
+    const scrollable = Math.max(scrollHeight - viewportHeight, 1);
+    scrollProgress = THREE.MathUtils.clamp(scrollTop / scrollable, 0, 1);
+  };
+
+  const handleScroll = () => {
+    updateScrollProgress();
+    lastScrollTime = performance.now();
+  };
 
   const initScene = async (container) => {
     const modelType = container.dataset.qmodel || "hero";
@@ -218,19 +262,46 @@ if (containers.length) {
     });
   };
 
-  containers.forEach((container) => {
-    initScene(container).catch((error) => {
-      console.error("Failed to init Q model scene:", error);
+  const initializeScenes = () => {
+    containers.forEach((container) => {
+      const oldCanvas = container.querySelector("canvas");
+      if (oldCanvas) {
+        oldCanvas.remove();
+      }
+      initScene(container).catch((error) => {
+        console.error("Failed to init Q model scene:", error);
+      });
     });
-  });
+  };
 
   const animate = () => {
     const elapsed = clock.getElapsedTime();
     const delta = Math.max(0, elapsed - (animate.lastElapsed || 0));
     animate.lastElapsed = elapsed;
+    const now = performance.now();
+    const scrollActive = now - lastScrollTime <= scrollStopDelay;
+    if (scrollActive !== wasScrollActive) {
+      const referenceEntry =
+        scenes.find(
+          (entry) =>
+            !(entry.isUserInteracting && entry.isUserInteracting())
+        ) || scenes[0];
+      if (!scrollActive) {
+        autoSpinStartAngle = referenceEntry
+          ? referenceEntry.modelGroup.rotation.y
+          : 0;
+        autoSpinStartTime = elapsed;
+      } else {
+        scrollStartProgress = scrollProgress;
+        scrollStartAngle = referenceEntry
+          ? referenceEntry.modelGroup.rotation.y
+          : 0;
+      }
+      wasScrollActive = scrollActive;
+    }
     scenes.forEach((entry) => {
       const isInteracting = entry.isUserInteracting && entry.isUserInteracting();
-      if (isInteracting) {
+      if (isInteracting && !scrollActive) {
         entry.wasInteracting = true;
         if (entry.setCameraResetting) {
           entry.setCameraResetting(false);
@@ -239,18 +310,37 @@ if (containers.length) {
           entry.setLastInteractionEnd(null);
         }
       } else {
-        const targetAngle = elapsed * spinSpeed;
-        if (entry.wasInteracting) {
-          entry.spinOffset = entry.modelGroup.rotation.y - targetAngle;
-          entry.wasInteracting = false;
-        }
-        if (Math.abs(entry.spinOffset) > 0.0001) {
-          const decay = Math.exp(-spinReturnSpeed * delta);
-          entry.spinOffset *= decay;
-        } else {
+        const lerpFactor = 1 - Math.exp(-spinLerpSpeed * delta);
+        if (scrollActive) {
+          const progressDelta = scrollProgress - scrollStartProgress;
+          const targetAngle = scrollStartAngle + progressDelta * TAU;
           entry.spinOffset = 0;
+          entry.wasInteracting = false;
+          entry.modelGroup.rotation.y = THREE.MathUtils.lerp(
+            entry.modelGroup.rotation.y,
+            targetAngle,
+            lerpFactor
+          );
+        } else {
+          const targetAngle =
+            autoSpinStartAngle + (elapsed - autoSpinStartTime) * spinSpeed;
+          if (entry.wasInteracting) {
+            entry.spinOffset = entry.modelGroup.rotation.y - targetAngle;
+            entry.wasInteracting = false;
+          }
+          if (Math.abs(entry.spinOffset) > 0.0001) {
+            const decay = Math.exp(-spinReturnSpeed * delta);
+            entry.spinOffset *= decay;
+          } else {
+            entry.spinOffset = 0;
+          }
+          const desiredAngle = targetAngle + entry.spinOffset;
+          entry.modelGroup.rotation.y = THREE.MathUtils.lerp(
+            entry.modelGroup.rotation.y,
+            desiredAngle,
+            lerpFactor
+          );
         }
-        entry.modelGroup.rotation.y = targetAngle + entry.spinOffset;
 
         if (
           entry.lastInteractionEnd &&
@@ -306,6 +396,25 @@ if (containers.length) {
 
   const handleResize = () => {
     scenes.forEach((entry) => entry.resize());
+    updateScrollProgress();
+  };
+
+  const attachRuntimeListeners = () => {
+    if (listenersAttached) {
+      return;
+    }
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    listenersAttached = true;
+  };
+
+  const detachRuntimeListeners = () => {
+    if (!listenersAttached) {
+      return;
+    }
+    window.removeEventListener("resize", handleResize);
+    window.removeEventListener("scroll", handleScroll);
+    listenersAttached = false;
   };
 
   const cleanup = () => {
@@ -314,11 +423,14 @@ if (containers.length) {
       animationFrameId = null;
     }
 
-    window.removeEventListener("resize", handleResize);
+    detachRuntimeListeners();
 
     scenes.forEach((entry) => {
       entry.renderer.dispose();
       entry.renderer.forceContextLoss();
+      if (entry.renderer.domElement && entry.renderer.domElement.parentElement) {
+        entry.renderer.domElement.parentElement.removeChild(entry.renderer.domElement);
+      }
 
       if (entry.controls) {
         entry.controls.dispose();
@@ -345,6 +457,7 @@ if (containers.length) {
     scenes.length = 0;
 
     modelCache.clear();
+    resetAnimationState();
   };
 
   document.addEventListener("visibilitychange", () => {
@@ -358,30 +471,28 @@ if (containers.length) {
     }
   });
 
-  window.addEventListener("pagehide", cleanup);
-
-  window.addEventListener("pageshow", (event) => {
-    if (event.persisted) {
-      window.scrollTo(0, 0);
-    }
-    if (event.persisted && scenes.length === 0) {
-      containers.forEach((container) => {
-        const oldCanvas = container.querySelector("canvas");
-        if (oldCanvas) {
-          oldCanvas.remove();
-        }
-        initScene(container).catch((error) => {
-          console.error("Failed to re-init Q model scene:", error);
-        });
-      });
-      setTimeout(() => {
-        if (scenes.length > 0 && !animationFrameId) {
-          animate();
-        }
-      }, 100);
-    }
+  window.addEventListener("pagehide", () => {
+    cleanup();
   });
 
+  window.addEventListener("pageshow", (event) => {
+    if (!event.persisted) {
+      updateScrollProgress();
+      return;
+    }
+    window.scrollTo(0, 0);
+    resetAnimationState();
+    initializeScenes();
+    attachRuntimeListeners();
+    if (!animationFrameId) {
+      animate();
+    }
+    updateScrollProgress();
+  });
+
+  initializeScenes();
+  resetAnimationState();
+  updateScrollProgress();
   animate();
-  window.addEventListener("resize", handleResize);
+  attachRuntimeListeners();
 }
