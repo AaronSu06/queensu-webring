@@ -9,7 +9,7 @@ if (containers.length) {
   const modelCache = new Map();
   const spinSpeed = 0.45;
   const spinReturnSpeed = 2.4;
-  const spinLerpSpeed = 8;
+  const spinLerpSpeed = 10;
   const cameraReturnDelay = 0;
   const cameraReturnSpeed = 2.2;
   const cameraReturnEpsilon = 0.0005;
@@ -109,8 +109,12 @@ if (containers.length) {
     const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 2000);
     camera.position.set(0, 0, 6);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance",
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
@@ -187,10 +191,10 @@ if (containers.length) {
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.dampingFactor = 0.04;
+    controls.dampingFactor = 0.08;
     controls.enablePan = false;
     controls.enableZoom = false;
-    controls.rotateSpeed = 0.7;
+    controls.rotateSpeed = 1.0;
     controls.minDistance = camera.position.z;
     controls.maxDistance = camera.position.z;
     controls.target.set(0, 0, 0);
