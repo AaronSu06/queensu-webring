@@ -85,7 +85,7 @@
     }
   </script>
 
-  <!-- Get program from URL hash -->
+  <!-- Get program from URL path or legacy hash -->
   <script type="module">
     const ringTitles = {
       cs: "CS WEBRING",
@@ -93,7 +93,29 @@
       bcom: "BCOM WEBRING",
       other: "OTHER FACULTY WEBRING"
     };
-    let program = (window.location.hash.slice(1).split("?")[0] || "cs").toLowerCase();
+    const ringPrograms = new Set(Object.keys(ringTitles));
+    const pathSegment = window.location.pathname.replace(/\/+$/, "").split("/").pop().toLowerCase();
+    const queryProgram = new URLSearchParams(window.location.search).get("ring")?.toLowerCase();
+    const hashSegment = window.location.hash.replace(/^#/, "").split("?")[0].toLowerCase();
+    let program = ringPrograms.has(pathSegment)
+      ? pathSegment
+      : (ringPrograms.has(queryProgram) ? queryProgram : (ringPrograms.has(hashSegment) ? hashSegment : "cs"));
+
+    const isLegacyWebringsPath = /\/webrings\.html\/?$/.test(window.location.pathname);
+    const hasHash = window.location.hash.length > 0;
+    const shouldNormalizeToProgramPath =
+      ringPrograms.has(pathSegment) ||
+      ringPrograms.has(hashSegment) ||
+      (isLegacyWebringsPath && !hasHash);
+    if (shouldNormalizeToProgramPath) {
+      const normalizedParams = new URLSearchParams(window.location.search);
+      normalizedParams.delete("ring");
+      const normalizedSearch = normalizedParams.toString();
+      const normalizedHash = ringPrograms.has(hashSegment) ? "" : window.location.hash;
+      const normalizedUrl = `/${program}${normalizedSearch ? `?${normalizedSearch}` : ""}${normalizedHash}`;
+      window.history.replaceState({}, "", normalizedUrl);
+    }
+
     document.title = ringTitles[program] || "QUEENSU-WEBRING";
 
     try {
