@@ -6,6 +6,13 @@
     <title>QUEENSU-WEBRING</title>
     <link rel="icon" type="image/png" href="./assets/icons/other/icon-white.png">
     <link rel="stylesheet" href="css/style.css">
+    <script>
+      if (window.location.pathname.endsWith("/index.html")) {
+        const normalizedPath = window.location.pathname.replace(/index\.html$/, "");
+        const nextUrl = `${normalizedPath || "/"}${window.location.search}${window.location.hash}`;
+        window.history.replaceState({}, "", nextUrl);
+      }
+    </script>
 
     <script>
     (async function() {

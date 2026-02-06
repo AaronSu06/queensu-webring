@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QUEENSU-WEBRING</title>
   <link rel="icon" type="image/png" href="./assets/icons/other/icon-white.png">
   <link href="./css/output.css" rel="stylesheet" />
 
@@ -86,7 +87,14 @@
 
   <!-- Get program from URL hash -->
   <script type="module">
-    let program = window.location.hash.slice(1) || "cs";
+    const ringTitles = {
+      cs: "CS WEBRING",
+      eng: "ENG WEBRING",
+      bcom: "BCOM WEBRING",
+      other: "OTHER FACULTY WEBRING"
+    };
+    let program = (window.location.hash.slice(1).split("?")[0] || "cs").toLowerCase();
+    document.title = ringTitles[program] || "QUEENSU-WEBRING";
 
     try {
       const response = await fetch(`./sites/${program}.json`);
@@ -131,7 +139,7 @@
           <!-- <span aria-hidden="true" data-qmodel="logo" data-model="" id="webring-logo" data-edge-angle="10" style="display: block; overflow: hidden; flex-shrink: 0;"></span> -->
           <h1 class="text-2xl font-monospace font-bold text-white" id="webring-title">QUEENSU-WEBRING</h1>
         </div>
-        <button onclick="window.location.href = 'index.html'" class="text-2xl font-monospace font-bold text-white whitespace-nowrap" style="cursor: pointer;">←BACK</button>
+        <button onclick="window.location.href = '/'" class="text-2xl font-monospace font-bold text-white whitespace-nowrap" style="cursor: pointer;">←BACK</button>
       </div>
     </div>
 
