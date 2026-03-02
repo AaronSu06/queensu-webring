@@ -5,6 +5,11 @@
         "website": "https://aaronsu.vercel.app/"
     },
     {
+        "name": "Zain Parihar",
+        "year": 2027,
+        "website": "https://zparrihar.vercel.app/"
+    },
+    {
         "name": "Kevin Phan",
         "year": 2028,
         "website": "https://kevinphan.vercel.app/"
@@ -20,7 +25,7 @@
         "website": "https://kaificial.vercel.app/"
     },
     {
-      "name": "Lucas Lam",
+        "name": "Lucas Lam",
         "year": 2028,
         "website": "https://bababunny.vercel.app"
     }
