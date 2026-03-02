@@ -1,4 +1,4 @@
-import { fuzzyMatch, formatUrl } from "./helpers.js";
+import { fuzzyMatch, formatUrl, getProgramFromUrl } from "./helpers.js";
 
 let createWebringList = (matchedSiteIndices, hasSearchTerm = false) => {
   const webringList = document.getElementById("webring-list");
@@ -123,7 +123,7 @@ function init() {
   }
   const searchInput = document.getElementById("search");
 
-  const program = window.location.hash.slice(1) || "cs";
+  const program = getProgramFromUrl();
   const title = document.getElementById("webring-title");
   if (title) {
     title.textContent = `QUEENSU-WEBRING/${program.toUpperCase()}`;

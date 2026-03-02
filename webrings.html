@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QUEENSU-WEBRING</title>
   <link rel="icon" type="image/png" href="./assets/icons/other/icon-white.png">
   <link href="./css/output.css" rel="stylesheet" />
 
@@ -84,9 +85,38 @@
     }
   </script>
 
-  <!-- Get program from URL hash -->
+  <!-- Get program from URL path or legacy hash -->
   <script type="module">
-    let program = window.location.hash.slice(1) || "cs";
+    const ringTitles = {
+      cs: "CS WEBRING",
+      eng: "ENG WEBRING",
+      bcom: "BCOM WEBRING",
+      other: "OTHER FACULTY WEBRING"
+    };
+    const ringPrograms = new Set(Object.keys(ringTitles));
+    const pathSegment = window.location.pathname.replace(/\/+$/, "").split("/").pop().toLowerCase();
+    const queryProgram = new URLSearchParams(window.location.search).get("ring")?.toLowerCase();
+    const hashSegment = window.location.hash.replace(/^#/, "").split("?")[0].toLowerCase();
+    let program = ringPrograms.has(pathSegment)
+      ? pathSegment
+      : (ringPrograms.has(queryProgram) ? queryProgram : (ringPrograms.has(hashSegment) ? hashSegment : "cs"));
+
+    const isLegacyWebringsPath = /\/webrings\.html\/?$/.test(window.location.pathname);
+    const hasHash = window.location.hash.length > 0;
+    const shouldNormalizeToProgramPath =
+      ringPrograms.has(pathSegment) ||
+      ringPrograms.has(hashSegment) ||
+      (isLegacyWebringsPath && !hasHash);
+    if (shouldNormalizeToProgramPath) {
+      const normalizedParams = new URLSearchParams(window.location.search);
+      normalizedParams.delete("ring");
+      const normalizedSearch = normalizedParams.toString();
+      const normalizedHash = ringPrograms.has(hashSegment) ? "" : window.location.hash;
+      const normalizedUrl = `/${program}${normalizedSearch ? `?${normalizedSearch}` : ""}${normalizedHash}`;
+      window.history.replaceState({}, "", normalizedUrl);
+    }
+
+    document.title = ringTitles[program] || "QUEENSU-WEBRING";
 
     try {
       const response = await fetch(`./sites/${program}.json`);
@@ -131,7 +161,7 @@
           <!-- <span aria-hidden="true" data-qmodel="logo" data-model="" id="webring-logo" data-edge-angle="10" style="display: block; overflow: hidden; flex-shrink: 0;"></span> -->
           <h1 class="text-2xl font-monospace font-bold text-white" id="webring-title">QUEENSU-WEBRING</h1>
         </div>
-        <button onclick="window.location.href = 'index.html'" class="text-2xl font-monospace font-bold text-white whitespace-nowrap" style="cursor: pointer;">←BACK</button>
+        <button onclick="window.location.href = '/'" class="text-2xl font-monospace font-bold text-white whitespace-nowrap" style="cursor: pointer;">←BACK</button>
       </div>
     </div>
 
