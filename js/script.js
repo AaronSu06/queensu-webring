@@ -140,7 +140,7 @@ function init() {
     if (count === 0) {
       info.textContent = `This webring has no members yet. Be the first to join!`;
     } else {
-      info.textContent = `This webring consists of ${count} member${count !== 1 ? 's' : ''}. It was last updated on January 29, 2026.`;
+      info.textContent = `This webring consists of ${count} member${count !== 1 ? 's' : ''}. It was last updated on April 27, 2026.`;
     }
   }
 
