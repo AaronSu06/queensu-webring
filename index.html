@@ -16,10 +16,18 @@
 
     <script>
     (async function() {
-      var hash = window.location.hash.slice(1);
-      if (!hash) return;
-
       var rings = ['cs', 'eng', 'other', 'bcom'];
+
+      var hash = window.location.hash.slice(1);
+      if (!hash) {
+        // Handle malformed widget URLs where # was omitted
+        var pathSite = window.location.pathname.replace(/^\//, '');
+        if (pathSite && pathSite.includes('.') && !rings.includes(pathSite)) {
+          var qs = window.location.search.replace(/^\?/, '');
+          hash = pathSite + (qs ? '?' + qs : '');
+        }
+      }
+      if (!hash) return;
 
       if (rings.includes(hash.split('?')[0])) return;
 
