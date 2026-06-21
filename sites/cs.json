@@ -1,47 +1,52 @@
 [
-    {
-        "name": "Aaron Su",
-        "year": 2028,
-        "website": "https://aaronsu.vercel.app/"
-    },
-    {
-        "name": "Zain Parihar",
-        "year": 2027,
-        "website": "https://zparrihar.vercel.app/"
-    },
-    {
-        "name": "Kevin Phan",
-        "year": 2028,
-        "website": "https://kevinphan.vercel.app/"
-    },
-    {
-        "name": "Techmeng Aing",
-        "year": 2028,
-        "website": "https://tmsv.dev/"
-    },
-    {
-        "name": "Kai Kim",
-        "year": 2028,
-        "website": "https://kaificial.vercel.app/"
-    },
-    {
-        "name": "Lucas Lam",
-        "year": 2028,
-        "website": "https://bababunny.vercel.app"
-    },
-    {
-        "name": "Pooria Roy",
-        "year": 2028,
-        "website": "https://pooria.dev/"
-    },
-    {
-        "name": "Evan Ferreira",
-        "year": 2027,
-        "website": "https://evanferreira.com/"
-    },
-        {
-        "name": "Jeffery Wu",
-        "year": 2027,
-        "website": "https://jefferywu.ca/"
-    }
+  {
+    "name": "Aaron Su",
+    "year": 2028,
+    "website": "https://aaronsu.vercel.app/"
+  },
+  {
+    "name": "Zain Parihar",
+    "year": 2027,
+    "website": "https://zparrihar.vercel.app/"
+  },
+  {
+    "name": "Kevin Phan",
+    "year": 2028,
+    "website": "https://kevinphan.vercel.app/"
+  },
+  {
+    "name": "Techmeng Aing",
+    "year": 2028,
+    "website": "https://tmsv.dev/"
+  },
+  {
+    "name": "Kai Kim",
+    "year": 2028,
+    "website": "https://kaificial.vercel.app/"
+  },
+  {
+    "name": "Lucas Lam",
+    "year": 2028,
+    "website": "https://bababunny.vercel.app"
+  },
+  {
+    "name": "Pooria Roy",
+    "year": 2028,
+    "website": "https://pooria.dev/"
+  },
+  {
+    "name": "Evan Ferreira",
+    "year": 2027,
+    "website": "https://evanferreira.com/"
+  },
+  {
+    "name": "Jeffery Wu",
+    "year": 2027,
+    "website": "https://jefferywu.ca/"
+  },
+  {
+    "name": "Joseph Liao",
+    "year": 2027,
+    "website": "https://josephliao.ca/"
+  }
 ]
